@@ -17,7 +17,7 @@ namespace LocalBenchmarks
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAuthentication();
-            services.AddAuthorization();
+            services.AddAuthorizationPolicyEvaluator();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
