@@ -1,0 +1,19 @@
+{
+  "Default": {
+    "Client": "Wrk",
+    "PresetHeaders": "Plaintext",
+    "ClientProperties": {
+      "ScriptName": "pipeline",
+      "PipelineDepth": 16
+    },
+    "Source": {
+      "Repository": "https://github.com/pranavkm/LocalBenchmark.git",
+      "BranchOrCommit": "master",
+      "Project": "LocalBenchmarks.csproj"
+    },
+    "Port": 8080
+  },
+  "Plaintext": {
+    "Path": "/"
+  }
+}
