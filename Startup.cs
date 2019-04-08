@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +20,8 @@ namespace LocalBenchmarks
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie();
             services.AddAuthorizationPolicyEvaluator();
         }
 
@@ -30,6 +35,14 @@ namespace LocalBenchmarks
 
             app.UseRouting();
 
+            app.Use(async (context, next) =>
+            {
+                var identity = new ClaimsIdentity(new[] { new Claim("ClaimA", "Value") }, CookieAuthenticationDefaults.AuthenticationScheme);
+                await context.SignInAsync(scheme: CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+                await next();
+            });
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -37,7 +50,7 @@ namespace LocalBenchmarks
                 endpoints.MapGet("/", async context =>
                 {
                     await context.Response.WriteAsync("Hello World!");
-                }).RequireAuthorization();
+                }).RequireAuthorization(new AuthorizeAttribute { AuthenticationSchemes =  CookieAuthenticationDefaults.AuthenticationScheme });
             });
         }
     }
